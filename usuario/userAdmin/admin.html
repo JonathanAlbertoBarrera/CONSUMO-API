@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+       <!-- Bootstrap CSS -->
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Admin</h1>
+    <!-- Registrar Alumnos -->
+
+     <!-- Registar USUARIOS Form -->
+     <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header text-center bg-success text-white">
+                <h4>Registrar USUARIO</h4>
+            </div>
+            <div class="card-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="nameRegister" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nameRegister"
+                            placeholder="Ingresa tu nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailRegister" class="form-label">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="emailRegister"
+                            placeholder="Ingresa tu correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordRegister" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="passwordRegister"
+                            placeholder="Crea una contraseña" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneRegister" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="phoneRegister"
+                            placeholder="Ingresa el número de teléfono" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+         // Manejo del formulario de registro USUARIO
+         document.getElementById('registerForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const usuario = {
+                nombre: document.getElementById('nameRegister').value,
+                correo: document.getElementById('emailRegister').value,
+                contrasenia: document.getElementById('passwordRegister').value,
+                telefono: document.getElementById('phoneRegister').value,
+                rol: 'usuario', // Rol por defecto
+                status: true    // Activo por defecto
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuario)
+                });
+                if (response.ok) {
+                    alert('Registro exitoso');
+                } else {
+                    alert('Error al registrar. Verifica los datos.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No se pudo conectar al servidor.');
+            }
+        }); 
+    </script>
+</body>
+</html>
