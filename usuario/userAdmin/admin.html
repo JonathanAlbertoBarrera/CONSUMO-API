@@ -39,6 +39,14 @@
                         <input type="text" class="form-control" id="phoneRegister"
                             placeholder="Ingresa el número de teléfono" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="roleRegister" class="form-label">Rol</label>
+                        <select class="form-select" id="roleRegister" required>
+                            <option value="" selected disabled>Selecciona un rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Soporte">Soporte</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-success w-100">Registrarse</button>
                 </form>
             </div>
@@ -57,7 +65,7 @@
                 correo: document.getElementById('emailRegister').value,
                 contrasenia: document.getElementById('passwordRegister').value,
                 telefono: document.getElementById('phoneRegister').value,
-                rol: 'usuario', // Rol por defecto
+                rol: document.getElementById('roleRegister').value,
                 status: true    // Activo por defecto
             };
 
