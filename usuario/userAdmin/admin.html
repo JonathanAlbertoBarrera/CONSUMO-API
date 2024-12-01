@@ -98,6 +98,13 @@
                             <label for="telefonoEditar" class="form-label">Teléfono</label>
                             <input type="text" class="form-control" id="telefonoEditar" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="rolEditar" class="form-label">Rol</label>
+                            <select class="form-select" id="rolEditar">
+                                <option value="Administrador">Administrador</option>
+                                <option value="Soporte">Soporte</option>
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
                     </form>
                 </div>
@@ -189,6 +196,7 @@
             document.getElementById('nombreEditar').value = nombre;
             document.getElementById('correoEditar').value = correo;
             document.getElementById('telefonoEditar').value = telefono;
+            document.getElementById('rolEditar').value = rol;
 
             // Mostramos el modal
             const modal = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
@@ -204,6 +212,7 @@
                 nombre: document.getElementById('nombreEditar').value,
                 correo: document.getElementById('correoEditar').value,
                 telefono: document.getElementById('telefonoEditar').value,
+                rol: document.getElementById('rolEditar').value
             };
 
             try {
