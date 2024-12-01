@@ -10,7 +10,7 @@
 </head>
 
 <body class="bg-light">
-<!-- 
+
     <div class="col-md-12" id="iniciarAlumno">
         <div class="card shadow">
             <div class="card-header text-center bg-primary text-white">
@@ -19,16 +19,16 @@
                 <form id="loginFormAlumno">
                     <h4>Iniciar Sesión como Alumno</h4>
                     <div class="mb-12">
-                        <label for="emailLogin2" class="form-label">Correo
+                        <label for="emailLogin" class="form-label">Correo
                             Electrónico</label>
-                        <input type="email" class="form-control" id="emailLogin"
+                        <input type="email" class="form-control" id="emailLogin2"
                             placeholder="Ingresa tu correo" required />
                     </div>
                     <div class="mb-12">
-                        <label for="passwordLogin2"
+                        <label for="passwordLogin"
                             class="form-label">Contraseña</label>
                         <input type="password" class="form-control"
-                            id="passwordLogin"
+                            id="passwordLogin2"
                             placeholder="Ingresa tu contraseña" required />
                     </div>
                     <br>
@@ -38,7 +38,7 @@
                 </form>
             </div>
         </div>
-    </div> -->
+    </div> 
 
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -99,7 +99,7 @@
 
                         // Redirigir según el rol del usuario
                         if (usuario.rol === "Administrador") {
-                            window.location.href = "usuario/userAdmin/admin.html";
+                            window.location.href = "usuario/userAdmin/gestionUsuarios.html";
                         } else if (usuario.rol === "Soporte") {
                             window.location.href = "usuario/soporte/soporte.html";
                         } else {
@@ -118,29 +118,29 @@
             }
         });
 
-         // Manejo del formulario de inicio de sesión ALUMNOS
-        // document.getElementById('loginFormAlumno').addEventListener('submit', async function (event) {
-        //     event.preventDefault();
-        //     const correo2 = document.getElementById('emailLogin2').value;
-        //     const contrasenia2 = document.getElementById('passwordLogin2').value;
+         //Manejo del formulario de inicio de sesión ALUMNOS
+        document.getElementById('loginFormAlumno').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const correo2 = document.getElementById('emailLogin2').value;
+            const contrasenia2 = document.getElementById('passwordLogin2').value;
 
-        //     try {
-        //         const response = await fetch('http://localhost:8080/api/login/alumno', {
-        //             method: 'POST',
-        //             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        //             body: new URLSearchParams({ correo: correo2, contrasenia: contrasenia2 })
-        //         });
-        //         if (response.ok) {
-        //             alert('Inicio de sesión exitoso');
-        //             window.location.href = "alumno/alumno.html";
-        //         } else {
-        //             alert('Error al iniciar sesión. Verifica tus datos.');
-        //         }
-        //     } catch (error) {
-        //         console.error('Error:', error);
-        //         alert('No se pudo conectar al servidor.');
-        //     }
-        // });
+            try {
+                const response = await fetch('http://localhost:8080/api/login/alumno', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ correo: correo2, contrasenia: contrasenia2 })
+                });
+                if (response.ok) {
+                    alert('Inicio de sesión exitoso');
+                    window.location.href = "alumno/alumno.html";
+                } else {
+                    alert('Error al iniciar sesión. Verifica tus datos.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No se pudo conectar al servidor.');
+            }
+        });
 
 
     </script>
