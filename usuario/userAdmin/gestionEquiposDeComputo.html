@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Equipos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center">Gestión de Equipos</h1>
+
+        <!-- Formulario para Registrar Equipo -->
+        <div class="card mt-3 shadow">
+            <div class="card-header bg-primary text-white">
+                <h4>Registrar Equipo</h4>
+            </div>
+            <div class="card-body">
+                <form id="registerEquipoForm">
+                    <div class="mb-3">
+                        <label for="numeroEnLab" class="form-label">Número en Laboratorio</label>
+                        <input type="number" class="form-control" id="numeroEnLab" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label">Código</label>
+                        <input type="text" class="form-control" id="codigo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="laboratorioSelect" class="form-label">Laboratorio</label>
+                        <select id="laboratorioSelect" class="form-select" required></select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla para Listar Equipos -->
+        <div class="mt-4">
+            <h3 class="text-center">Lista de Equipos</h3>
+            <table class="table table-striped">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Número</th>
+                        <th>Código</th>
+                        <th>Laboratorio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaEquipos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Equipo -->
+    <div class="modal fade" id="editarEquipoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Editar Equipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarEquipoForm">
+                        <input type="hidden" id="idEquipoEditar">
+                        <div class="mb-3">
+                            <label for="numeroEnLabEditar" class="form-label">Número en Laboratorio</label>
+                            <input type="number" class="form-control" id="numeroEnLabEditar" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="codigoEditar" class="form-label">Código</label>
+                            <input type="text" class="form-control" id="codigoEditar" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="laboratorioEditar" class="form-label">Laboratorio</label>
+                            <select id="laboratorioEditar" class="form-select" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const apiEquipos = "http://localhost:8080/api/equipos";
+        const apiLaboratorios = "http://localhost:8080/api/laboratorios";
+
+        // Cargar laboratorios en select
+        async function cargarLaboratorios(selectId, selectedId = null) {
+            try {
+                const response = await fetch(apiLaboratorios);
+                const data = await response.json();
+                const laboratorios = data.laboratorioResponse.laboratorios;
+                const select = document.getElementById(selectId);
+                select.innerHTML = "<option value=''>Seleccionar laboratorio</option>";
+                laboratorios.forEach(lab => {
+                    const option = document.createElement("option");
+                    option.value = lab.id_lab;
+                    option.textContent = lab.nombre_lab;
+                    if (lab.id_lab === selectedId) option.selected = true;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error al cargar laboratorios:", error);
+            }
+        }
+
+        // Registrar un nuevo equipo
+        document.getElementById("registerEquipoForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const equipo = {
+                numeroEnLab: document.getElementById("numeroEnLab").value,
+                codigo: document.getElementById("codigo").value,
+                laboratorio: { id_lab: document.getElementById("laboratorioSelect").value },
+                status: true,
+            };
+            try {
+                const response = await fetch(apiEquipos, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(equipo),
+                });
+                if (response.ok) obtenerEquipos();
+                else alert("Error al registrar equipo.");
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+
+        // Obtener equipos
+        async function obtenerEquipos() {
+            try {
+                const response = await fetch(apiEquipos);
+                const data = await response.json();
+                const equipos = data.equipoComputoResponse.equipoComputos;
+                const tabla = document.getElementById("tablaEquipos");
+                tabla.innerHTML = "";
+                equipos.forEach(equipo => {
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                    <td>${equipo.id_equipo}</td>
+                    <td>${equipo.numeroEnLab}</td>
+                    <td>${equipo.codigo}</td>
+                    <td>${equipo.laboratorio.nombre_lab}</td>
+                    <td>${equipo.status ? "Activo" : "Inactivo"}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="abrirModalEditar(${equipo.id_equipo}, '${equipo.codigo}', ${equipo.numeroEnLab}, ${equipo.laboratorio.id_lab})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${equipo.codigo}', ${equipo.status})">${equipo.status ? "Desactivar" : "Activar"}</button>
+                    </td>
+                     `;
+                    tabla.appendChild(fila);
+                    });
+
+            } catch (error) {
+                console.error("Error al obtener equipos:", error);
+            }
+        }
+
+        // Abrir modal para editar equipo
+        function abrirModalEditar(id, codigo, numeroEnLab, id_lab) {
+            document.getElementById("idEquipoEditar").value = id;
+            document.getElementById("codigoEditar").value = codigo;
+            document.getElementById("numeroEnLabEditar").value = numeroEnLab;
+            cargarLaboratorios("laboratorioEditar", id_lab);
+            const modal = new bootstrap.Modal(document.getElementById("editarEquipoModal"));
+            modal.show();
+        }
+
+        // Editar equipo
+        document.getElementById("editarEquipoForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const codigo = document.getElementById("codigoEditar").value; // Capturamos el código, no el ID
+    const equipo = {
+        numeroEnLab: document.getElementById("numeroEnLabEditar").value,
+        laboratorio: { id_lab: document.getElementById("laboratorioEditar").value },
+    };
+
+    try {
+        const response = await fetch(`${apiEquipos}/${codigo}`, { // Usamos el código en la URL
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(equipo),
+        });
+        if (response.ok) {
+            alert("Equipo actualizado correctamente.");
+            obtenerEquipos(); // Refrescar la lista
+            bootstrap.Modal.getInstance(document.getElementById("editarEquipoModal")).hide(); // Cerrar el modal
+        } else {
+            alert("Error al actualizar el equipo.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+    }
+});
+
+
+        // Cambiar estado del equipo
+        async function cambiarEstado(codigo, status) {
+            try {
+                const response = await fetch(`${apiEquipos}/status/${codigo}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: !status }),
+                });
+                if (response.ok) obtenerEquipos();
+                else alert("Error al cambiar estado.");
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Inicializar
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarLaboratorios("laboratorioSelect");
+            obtenerEquipos();
+        });
+    </script>
+</body>
+
+</html>
