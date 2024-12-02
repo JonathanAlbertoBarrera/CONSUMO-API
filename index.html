@@ -157,6 +157,33 @@
 <body class="bg-light">
 
     <!--Aqui debe ir login para alumnos-->
+     <!--Aqui debe ir login para alumnos-->
+     <div class="container mt-5">
+        <div class="row justify-content-center">
+            <!-- Login Usuarios -->
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h4>Iniciar Sesión como Alumno</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="loginFormAlumno">
+                            <div class="mb-3">
+                                <label for="emailLogin2" class="form-label">Correo Electrónico</label>
+                                <input type="email2" class="form-control" id="emailLogin" placeholder="Ingresa tu correo"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="passwordLogin" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="passwordLogin"
+                                    placeholder="Ingresa tu contraseña" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                        </form>
+                    </div>
+                </div>
+        </div>
+    </div>
 
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -258,6 +285,30 @@
                 alert('No se pudo conectar al servidor.');
             }
         });
+
+         // Manejo del formulario de inicio de sesión
+         document.getElementById('loginFormAlumno').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const correo2 = document.getElementById('emailLogin2').value;
+            const contrasenia2 = document.getElementById('passwordLogin2').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/api/login/alumno', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ correo: correo2, contrasenia: contrasenia2 })
+                });
+                if (response.ok) {
+                    alert('Inicio de sesión exitoso');
+                } else {
+                    alert('Error al iniciar sesión. Verifica tus datos.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('No se pudo conectar al servidor.');
+            }
+        });
+
 
 
     </script>
