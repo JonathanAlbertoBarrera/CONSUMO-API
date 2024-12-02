@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Laboratorios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center">Gestión de Laboratorios</h1>
+
+        <!-- Formulario Registrar Laboratorio -->
+        <div class="col-md-5 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Registrar Laboratorio</h4>
+                </div>
+                <div class="card-body">
+                    <form id="registerLabForm">
+                        <div class="mb-3">
+                            <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
+                            <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="docencia" class="form-label">Docencia</label>
+                            <input type="number" class="form-control" id="docencia" placeholder="Ejemplo: 4" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla Laboratorios -->
+        <div class="mt-4">
+            <h3 class="text-center">Lista de Laboratorios</h3>
+            <table class="table table-striped">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Docencia</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaLaboratorios"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Laboratorio -->
+    <div class="modal fade" id="modalEditarLaboratorio" tabindex="-1" aria-labelledby="modalEditarLaboratorioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="modalEditarLaboratorioLabel">Editar Laboratorio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarLab">
+                        <input type="hidden" id="idLabEditar">
+                        <div class="mb-3">
+                            <label for="nombreLabEditar" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreLabEditar" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="docenciaLabEditar" class="form-label">Docencia</label>
+                            <input type="number" class="form-control" id="docenciaLabEditar" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const apiUrl = "http://localhost:8080/api/laboratorios";
+
+        // Registrar laboratorio
+        document.getElementById("registerLabForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const laboratorio = {
+                nombre_lab: document.getElementById("nombre_lab").value,
+                docencia: document.getElementById("docencia").value,
+                estatus: true,
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(laboratorio),
+                });
+                if (response.ok) {
+                    alert("Laboratorio registrado con éxito.");
+                    obtenerLaboratorios();
+                } else {
+                    alert("Error al registrar el laboratorio.");
+                }
+            } catch (error) {
+                alert("Error al conectar con el servidor.");
+            }
+        });
+
+        // Obtener laboratorios
+        async function obtenerLaboratorios() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("Error al obtener laboratorios.");
+                const data = await response.json();
+                const laboratorios = data.laboratorioResponse.laboratorios;
+
+                const tablaLaboratorios = document.getElementById("tablaLaboratorios");
+                tablaLaboratorios.innerHTML = "";
+
+                laboratorios.forEach((lab) => {
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                        <td>${lab.id_lab}</td>
+                        <td>${lab.nombre_lab}</td>
+                        <td>${lab.docencia}</td>
+                        <td>${lab.estatus ? "Activo" : "Inactivo"}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" 
+                                onclick="abrirModalEditarLab(${lab.id_lab}, '${lab.nombre_lab}', ${lab.docencia})">Editar</button>
+                            <button class="btn btn-danger btn-sm" 
+                                onclick="cambiarEstadoLab(${lab.id_lab}, ${lab.estatus})">
+                                ${lab.estatus ? "Desactivar" : "Activar"}
+                            </button>
+                        </td>
+                    `;
+                    tablaLaboratorios.appendChild(fila);
+                });
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Abrir modal de edición
+        function abrirModalEditarLab(id, nombre, docencia) {
+            document.getElementById("idLabEditar").value = id;
+            document.getElementById("nombreLabEditar").value = nombre;
+            document.getElementById("docenciaLabEditar").value = docencia;
+
+            const modal = new bootstrap.Modal(document.getElementById("modalEditarLaboratorio"));
+            modal.show();
+        }
+
+        // Guardar cambios de laboratorio
+        document.getElementById("formEditarLab").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const idLab = document.getElementById("idLabEditar").value;
+            const laboratorioActualizado = {
+                nombre_lab: document.getElementById("nombreLabEditar").value,
+                docencia: document.getElementById("docenciaLabEditar").value,
+            };
+
+            try {
+                const response = await fetch(`${apiUrl}/${idLab}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(laboratorioActualizado),
+                });
+
+                if (response.ok) {
+                    alert("Laboratorio actualizado con éxito");
+                    obtenerLaboratorios();
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("modalEditarLaboratorio"));
+                    modal.hide();
+                } else {
+                    alert("Error al actualizar el laboratorio.");
+                }
+            } catch (error) {
+                alert("Error al conectar con el servidor.");
+            }
+        });
+
+        // Cambiar estado del laboratorio
+        async function cambiarEstadoLab(id, estado) {
+            const nuevoEstado = !estado;
+            try {
+                const response = await fetch(`${apiUrl}/status/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ estatus: nuevoEstado }),
+                });
+                if (response.ok) {
+                    obtenerLaboratorios();
+                } else {
+                    alert("Error al cambiar el estado.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", obtenerLaboratorios);
+    </script>
+</body>
+
+</html>
