@@ -90,10 +90,18 @@
         const apiEquipos = "http://localhost:8080/api/equipos";
         const apiLaboratorios = "http://localhost:8080/api/laboratorios";
 
+        // Obtener el token desde el almacenamiento local
+        const jwtToken = localStorage.getItem("jwtToken");
+
         // Cargar laboratorios en select
         async function cargarLaboratorios(selectId, selectedId = null) {
             try {
-                const response = await fetch(apiLaboratorios);
+                const response = await fetch(apiLaboratorios, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
+                });
                 const data = await response.json();
                 const laboratorios = data.laboratorioResponse.laboratorios;
                 const select = document.getElementById(selectId);
@@ -122,10 +130,16 @@
             try {
                 const response = await fetch(apiEquipos, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
                     body: JSON.stringify(equipo),
                 });
-                if (response.ok) obtenerEquipos();
+                if (response.ok){
+                    alert("Equipo de computo registrado con éxito.");
+                    obtenerEquipos();
+                } 
                 else alert("Error al registrar equipo.");
             } catch (error) {
                 console.error("Error:", error);
@@ -135,7 +149,12 @@
         // Obtener equipos
         async function obtenerEquipos() {
             try {
-                const response = await fetch(apiEquipos);
+                const response = await fetch(apiEquipos, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
+                });
                 const data = await response.json();
                 const equipos = data.equipoComputoResponse.equipoComputos;
                 const tabla = document.getElementById("tablaEquipos");
@@ -143,19 +162,18 @@
                 equipos.forEach(equipo => {
                     const fila = document.createElement("tr");
                     fila.innerHTML = `
-                    <td>${equipo.id_equipo}</td>
-                    <td>${equipo.numeroEnLab}</td>
-                    <td>${equipo.codigo}</td>
-                    <td>${equipo.laboratorio.nombre_lab}</td>
-                    <td>${equipo.status ? "Activo" : "Inactivo"}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="abrirModalEditar(${equipo.id_equipo}, '${equipo.codigo}', ${equipo.numeroEnLab}, ${equipo.laboratorio.id_lab})">Editar</button>
-                        <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${equipo.codigo}', ${equipo.status})">${equipo.status ? "Desactivar" : "Activar"}</button>
-                    </td>
-                     `;
+                <td>${equipo.id_equipo}</td>
+                <td>${equipo.numeroEnLab}</td>
+                <td>${equipo.codigo}</td>
+                <td>${equipo.laboratorio.nombre_lab}</td>
+                <td>${equipo.status ? "Activo" : "Inactivo"}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="abrirModalEditar(${equipo.id_equipo}, '${equipo.codigo}', ${equipo.numeroEnLab}, ${equipo.laboratorio.id_lab})">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${equipo.codigo}', ${equipo.status})">${equipo.status ? "Desactivar" : "Activar"}</button>
+                </td>
+            `;
                     tabla.appendChild(fila);
-                    });
-
+                });
             } catch (error) {
                 console.error("Error al obtener equipos:", error);
             }
@@ -173,39 +191,43 @@
 
         // Editar equipo
         document.getElementById("editarEquipoForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const id = document.getElementById("idEquipoEditar").value; // Capturamos el ID
-    const equipo = {
-        numeroEnLab: document.getElementById("numeroEnLabEditar").value,
-        codigo: document.getElementById("codigoEditar").value, //añadimos para actualizar el cmampo codigo
-        laboratorio: { id_lab: document.getElementById("laboratorioEditar").value },
-    };
-
-    try {
-        const response = await fetch(`${apiEquipos}/${id}`, { // Usamos el código en la URL
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(equipo),
+            event.preventDefault();
+            const id = document.getElementById("idEquipoEditar").value;
+            const equipo = {
+                numeroEnLab: document.getElementById("numeroEnLabEditar").value,
+                codigo: document.getElementById("codigoEditar").value,
+                laboratorio: { id_lab: document.getElementById("laboratorioEditar").value },
+            };
+            try {
+                const response = await fetch(`${apiEquipos}/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
+                    body: JSON.stringify(equipo),
+                });
+                if (response.ok) {
+                    alert("Equipo actualizado correctamente.");
+                    obtenerEquipos();
+                    bootstrap.Modal.getInstance(document.getElementById("editarEquipoModal")).hide();
+                } else {
+                    alert("Error al actualizar el equipo.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
         });
-        if (response.ok) {
-            alert("Equipo actualizado correctamente.");
-            obtenerEquipos(); // Refrescar la lista
-            bootstrap.Modal.getInstance(document.getElementById("editarEquipoModal")).hide(); // Cerrar el modal
-        } else {
-            alert("Error al actualizar el equipo.");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-    }
-});
-
 
         // Cambiar estado del equipo
         async function cambiarEstado(codigo, status) {
             try {
                 const response = await fetch(`${apiEquipos}/status/${codigo}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
                     body: JSON.stringify({ status: !status }),
                 });
                 if (response.ok) obtenerEquipos();
@@ -220,6 +242,7 @@
             cargarLaboratorios("laboratorioSelect");
             obtenerEquipos();
         });
+
     </script>
 </body>
 

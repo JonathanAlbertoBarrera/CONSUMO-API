@@ -22,7 +22,8 @@
                     <form id="registerLabForm">
                         <div class="mb-3">
                             <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
-                            <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11" required>
+                            <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11"
+                                required>
                         </div>
                         <div class="mb-3">
                             <label for="docencia" class="form-label">Docencia</label>
@@ -53,7 +54,8 @@
     </div>
 
     <!-- Modal para Editar Laboratorio -->
-    <div class="modal fade" id="modalEditarLaboratorio" tabindex="-1" aria-labelledby="modalEditarLaboratorioLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditarLaboratorio" tabindex="-1" aria-labelledby="modalEditarLaboratorioLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -82,6 +84,9 @@
     <script>
         const apiUrl = "http://localhost:8080/api/laboratorios";
 
+        // Obtener el token desde el almacenamiento local
+        const jwtToken = localStorage.getItem("jwtToken");
+
         // Registrar laboratorio
         document.getElementById("registerLabForm").addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -94,7 +99,10 @@
             try {
                 const response = await fetch(apiUrl, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
                     body: JSON.stringify(laboratorio),
                 });
                 if (response.ok) {
@@ -111,7 +119,12 @@
         // Obtener laboratorios
         async function obtenerLaboratorios() {
             try {
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
+                });
                 if (!response.ok) throw new Error("Error al obtener laboratorios.");
                 const data = await response.json();
                 const laboratorios = data.laboratorioResponse.laboratorios;
@@ -122,19 +135,19 @@
                 laboratorios.forEach((lab) => {
                     const fila = document.createElement("tr");
                     fila.innerHTML = `
-                        <td>${lab.id_lab}</td>
-                        <td>${lab.nombre_lab}</td>
-                        <td>${lab.docencia}</td>
-                        <td>${lab.estatus ? "Activo" : "Inactivo"}</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" 
-                                onclick="abrirModalEditarLab(${lab.id_lab}, '${lab.nombre_lab}', ${lab.docencia})">Editar</button>
-                            <button class="btn btn-danger btn-sm" 
-                                onclick="cambiarEstadoLab(${lab.id_lab}, ${lab.estatus})">
-                                ${lab.estatus ? "Desactivar" : "Activar"}
-                            </button>
-                        </td>
-                    `;
+                <td>${lab.id_lab}</td>
+                <td>${lab.nombre_lab}</td>
+                <td>${lab.docencia}</td>
+                <td>${lab.estatus ? "Activo" : "Inactivo"}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" 
+                        onclick="abrirModalEditarLab(${lab.id_lab}, '${lab.nombre_lab}', ${lab.docencia})">Editar</button>
+                    <button class="btn btn-danger btn-sm" 
+                        onclick="cambiarEstadoLab(${lab.id_lab}, ${lab.estatus})">
+                        ${lab.estatus ? "Desactivar" : "Activar"}
+                    </button>
+                </td>
+            `;
                     tablaLaboratorios.appendChild(fila);
                 });
             } catch (error) {
@@ -165,7 +178,10 @@
             try {
                 const response = await fetch(`${apiUrl}/${idLab}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
                     body: JSON.stringify(laboratorioActualizado),
                 });
 
@@ -188,7 +204,10 @@
             try {
                 const response = await fetch(`${apiUrl}/status/${id}`, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${jwtToken}`, // Agregar el token
+                    },
                     body: JSON.stringify({ estatus: nuevoEstado }),
                 });
                 if (response.ok) {
@@ -202,6 +221,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", obtenerLaboratorios);
+
     </script>
 </body>
 

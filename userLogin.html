@@ -187,7 +187,7 @@
         <form id="loginForm">
             <h1>Inicio de Sesión</h1>
             <div class="input-box">
-                <input type="email" class="form-control" id="emailLogin" placeholder="Ingresa tu correo"
+                <input type="text" class="form-control" id="emailLogin" placeholder="Ingresa tu username"
                     required>
             </div>
             <div class="input-box">
@@ -212,51 +212,57 @@
 
     <!-- JS para manejar formularios -->
     <script>
-        // Manejo del formulario de inicio de sesión USUARIOS
         document.getElementById('loginForm').addEventListener('submit', async function (event) {
             event.preventDefault();
-            const correo = document.getElementById('emailLogin').value;
+
+            // Capturar datos del formulario
+            const usuario = document.getElementById('emailLogin').value;
             const contrasenia = document.getElementById('passwordLogin').value;
 
             try {
-                const response = await fetch('http://localhost:8080/api/login/usuario', {
+                // Realizar solicitud al backend para autenticar
+                const response = await fetch('http://localhost:8080/v1/authenticate', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ correo, contrasenia })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, contrasenia })
                 });
+
                 if (response.ok) {
+                    const data = await response.json(); // Decodificar la respuesta como JSON
+
+                    // Guardar el token en localStorage
+                    const jwtToken = data.jwtToken;
+                    localStorage.setItem('jwtToken', jwtToken);
+
                     alert('Inicio de sesión exitoso');
-                    const data = await response.json(); // Parsear la respuesta como JSON
 
-                    // Validar el estado del inicio de sesión según metadata
-                    const metadata = data.metadata[0]; // Obtener la metadata
-                    if (metadata.tipo === "Ok" && metadata.codigo === "00") {
-                        const usuario = data.usuarioResponse.usuario[0]; // Obtener el usuario
+                    // Decodificar el token para obtener los roles
+                    const base64Url = jwtToken.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    const tokenData = JSON.parse(jsonPayload);
 
-                        // Redirigir según el rol del usuario
-                        if (usuario.rol === "Administrador") {
-                            window.location.href = "usuario/userAdmin/indexAdmin.html";
-                        } else if (usuario.rol === "Soporte") {
-                            window.location.href = "usuario/soporte/soporte.html";
-                        } else {
-                            alert("Rol no reconocido. Contacta al administrador.");
-                        }
+                    // Redirigir según el rol del usuario
+                    const rol = tokenData.rol.authority; // Asegúrate que el rol esté en el claim "rol"
+                    if (rol === 'ROLE_Administrador') {
+                        window.location.href = "usuario/userAdmin/indexAdmin.html";
+                    } else if (rol === 'ROLE_Soporte') {
+                        window.location.href = "usuario/soporte/soporte.html";
                     } else {
-                        // Manejo de errores según metadata
-                        alert(`Error: ${metadata.dato}`);
+                        alert('Rol no reconocido. Contacta al administrador.');
                     }
                 } else {
-                    alert('Error al iniciar sesión. Verifica tus datos.');
+                    // Manejo de errores si el backend devuelve un error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.message || 'Credenciales inválidas'}`);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('No se pudo conectar al servidor.');
             }
         });
-
-
-
-
     </script>
 </body>
 
