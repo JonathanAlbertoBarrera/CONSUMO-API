@@ -174,14 +174,17 @@
         // Editar equipo
         document.getElementById("editarEquipoForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const codigo = document.getElementById("codigoEditar").value; // Capturamos el código, no el ID
+    //editar para mandar el id
+    const idEquipo = document.getElementById("idEquipoEditar").value; // Capturamos el código, no el ID
     const equipo = {
         numeroEnLab: document.getElementById("numeroEnLabEditar").value,
+        codigo: document.getElementById("codigoEditar").value,
         laboratorio: { id_lab: document.getElementById("laboratorioEditar").value },
     };
 
     try {
-        const response = await fetch(`${apiEquipos}/${codigo}`, { // Usamos el código en la URL
+        //cambiar variable
+        const response = await fetch(`${apiEquipos}/${idEquipo}`, { // Usamos el código en la URL
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(equipo),
