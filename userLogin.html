@@ -246,6 +246,10 @@
 
                     // Redirigir según el rol del usuario
                     const rol = tokenData.rol.authority; // Asegúrate que el rol esté en el claim "rol"
+
+                    const idUsuario = data.usuarioResponse.usuario[0].id_usuario; // Extraer el id_alumno
+                    localStorage.setItem('id_usuario', idUsuario); // Guardar el id_alumno en el local storage
+
                     if (rol === 'ROLE_Administrador') {
                         window.location.href = "usuario/userAdmin/indexAdmin.html";
                     } else if (rol === 'ROLE_Soporte') {

@@ -65,8 +65,12 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Computadora</th>
                         <th>Fecha</th>
+                        <th>Hora inicio</th>
+                        <th>Hora final</th>
                         <th>Comentario</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="tablaRegistros"></tbody>
@@ -77,6 +81,11 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const idUsuario = localStorage.getItem('id_usuario');
+        if (!idAlumno) {
+            console.log('No se encontró el id_usuario en el localStorage.');
+        }
+
         const apiUrl = "http://localhost:8080/api/revisiones";
         const jwtToken = localStorage.getItem('jwtToken');
 
