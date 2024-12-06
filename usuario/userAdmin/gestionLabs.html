@@ -10,7 +10,7 @@
 <style>
     body {
         margin: 0;
-        padding: 70px 0 0; /* Espacio para la navbar fija */
+        padding: 70px 0 0;
         font-family: 'Arial', sans-serif;
         background-color: #f8f9fa;
     }
@@ -18,10 +18,11 @@
     .navbar {
         background: #007bff;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-       
+        font-weight: bold;
     }
 
-    .navbar-brand, .nav-link {
+    .navbar-brand,
+    .nav-link {
         color: #fff !important;
     }
 
@@ -43,7 +44,8 @@
         border: 1px solid #ddd;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
         text-align: center;
         border: 1px solid #ddd !important;
     }
@@ -56,18 +58,17 @@
         color: #fff;
     }
 
-    .container{
+    .container {
         margin-top: 1%;
     }
 
-    h3{
+    h3 {
         margin-top: 5%;
     }
 </style>
-</head>
 
 <body>
-<!-- Navbar -->
+    <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand">Gestión de Laboratorios</a>
@@ -84,51 +85,76 @@
         </div>
     </div>
 </nav>
+    <div class="container mt-4">
+        <h1 class="text-center">Gestión de Laboratorios</h1>
 
-<!-- Formulario Registrar Laboratorio -->
-<div class="container">
-    <div class="col-md-6 mx-auto">
-        <div class="card shadow">
-            <div class="card-header text-center">
-                Registrar Laboratorio
+        <!-- Formulario Registrar Laboratorio -->
+        <div class="col-md-5 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4>Registrar Laboratorio</h4>
+                </div>
+                <div class="card-body">
+                    <form id="registerLabForm">
+                        <div class="mb-3">
+                            <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
+                            <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="docencia" class="form-label">Docencia</label>
+                            <input type="number" class="form-control" id="docencia" placeholder="Ejemplo: 4" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form id="registerLabForm">
-                    <div class="mb-3">
-                        <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
-                        <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="docencia" class="form-label">Docencia</label>
-                        <input type="number" class="form-control" id="docencia" placeholder="Ejemplo: 4" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Registrar</button>
-                </form>
-            </div>
+        </div>
+
+        <!-- Tabla Laboratorios -->
+        <div class="mt-4">
+            <h3 class="text-center">Lista de Laboratorios</h3>
+            <table class="table table-striped">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Docencia</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaLaboratorios"></tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Tabla Laboratorios -->
-    <div class="mt-4">
-        <h3 class="text-center">Lista de Laboratorios</h3>
-        <div class="card shadow">
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Docencia</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaLaboratorios"></tbody>
-                </table>
+    <!-- Modal para Editar Laboratorio -->
+    <div class="modal fade" id="modalEditarLaboratorio" tabindex="-1" aria-labelledby="modalEditarLaboratorioLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="modalEditarLaboratorioLabel">Editar Laboratorio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarLab">
+                        <input type="hidden" id="idLabEditar">
+                        <div class="mb-3">
+                            <label for="nombreLabEditar" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombreLabEditar" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="docenciaLabEditar" class="form-label">Docencia</label>
+                            <input type="number" class="form-control" id="docenciaLabEditar" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
