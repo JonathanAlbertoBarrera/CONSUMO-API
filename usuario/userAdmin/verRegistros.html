@@ -4,8 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    
+    <div class="mt-4">
+        <h3 class="text-center">Lista de registros</h3>
+        <table class="table table-striped">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Matrícula</th>
+                    <th>Código Equipo</th>
+                    <th>Docente</th>
+                    <th>Fecha</th>
+                    <th>Hora Inicial</th>
+                    <th>Hora Final</th>
+                    <th>Comentario</th>
+                </tr>
+            </thead>
+            <tbody id="tablaRegistros"></tbody>
+        </table>
+    </div>
+    <script>
+        const apiUrl = "http://localhost:8080/api/registros";
+        const jwtToken = localStorage.getItem('jwtToken');
+
+        async function obtenerRegistro() {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                    },
+                });
+                if (!response.ok) throw new Error("Error al obtener registros.");
+                const data = await response.json();
+                const registros = data.registroResponse.registros;
+
+                const tablaRegistros = document.getElementById("tablaRegistros");
+                tablaRegistros.innerHTML = "";
+
+                registros.forEach((registro) => {
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                        <td>${registro.alumno.nombre}</td>
+                        <td>${registro.alumno.matricula}</td>
+                        <td>${registro.equipo_computo.codigo}</td>
+                        <td>${registro.docente}</td>
+                        <td>${registro.fecha}</td>
+                        <td>${registro.horaInicial}</td>
+                        <td>${registro.horaFinal}</td>
+                        <td>${registro.comentario}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editarAlumno(${registro.alumno.id_alumno})">Editar</button>
+                            <button class="btn btn-danger" onclick="eliminarAlumno(${registro.alumno.id_alumno})">Eliminar</button>
+                        </td>
+                    `;
+                    tablaRegistros.appendChild(fila);
+                });
+            } catch (error) {
+                console.error("Error obteniendo los registros:", error);
+            }
+        }
+
+        obtenerRegistro();
+    </script>
 </body>
 </html>
