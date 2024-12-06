@@ -77,17 +77,48 @@
                                         <th>Hora inicio</th>
                                         <th>Hora final</th>
                                         <th>Comentario</th>
-                                        
+                                        <th>Estado</th>
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
-                                
+
                             </tr>
                         </thead>
-                        
+
                     </tr>
                 </thead>
                 <tbody id="tablaRegistros"></tbody>
+            </table>
+        </div>
+        <h3 class="text-center">Lista de registros revisados.</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <thead>
+                            <tr>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Computadora</th>
+                                        <th>Laboratorio</th>
+                                        <th>Docencia</th>
+                                        <th>Alumno</th>
+                                        <th>Fecha</th>
+                                        <th>Hora inicio</th>
+                                        <th>Hora final</th>
+                                        <th>Comentario</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+
+                            </tr>
+                        </thead>
+
+                    </tr>
+                </thead>
+                <tbody id="tablaRegistrosRevisados"></tbody>
             </table>
         </div>
     </div>
@@ -95,16 +126,18 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const apiUrl = "http://localhost:8080/api/registros";
-        const jwtToken = localStorage.getItem('jwtToken');
+        const apiUrl = "http://localhost:8080/api/registros/true";
+        const apiUrl2 = "http://localhost:8080/api/registros/false";
+        const jwtToken = localStorage.getItem("jwtToken");
     
+        // Función para obtener registros
         async function obtenerRegistro() {
             try {
                 const response = await fetch(apiUrl, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${jwtToken}`,
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
                     },
                 });
     
@@ -116,6 +149,10 @@
                 tablaRegistros.innerHTML = "";
     
                 registros.forEach((registro) => {
+                    const estadoTexto = registro.estatus ? "Pendiente" : "Revisada";
+                    const estadoClase = registro.estatus ? "btn-primary" : "btn-secondary";
+                    const deshabilitado = !registro.estatus ? "disabled" : ""; // Deshabilitar el botón si el estado es "false"
+    
                     const fila = document.createElement("tr");
                     fila.innerHTML = `
                         <td>${registro.id_registro}</td>
@@ -127,23 +164,131 @@
                         <td>${registro.horaInicial}</td>
                         <td>${registro.horaFinal}</td>
                         <td>${registro.comentario}</td>
+                        <td>${estadoTexto}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm revisar-btn" data-id="${registro.id_registro}">
-                                Revisar
+                            <button 
+                                class="btn btn-sm revisar-btn ${estadoClase}" 
+                                data-id="${registro.id_registro}" 
+                                data-status="${registro.estatus}" 
+                                ${deshabilitado}>
+                                ${registro.estatus ? "Revisar" : "Finalizado"}
                             </button>
                         </td>
                     `;
                     tablaRegistros.appendChild(fila);
+                });
+    
+                // Agregar evento a los botones de "Revisar"
+                document.querySelectorAll(".revisar-btn").forEach((boton) => {
+                    boton.addEventListener("click", async function () {
+                        const idRegistro = this.dataset.id; // Obtener el ID del registro
+                        const estadoActual = this.dataset.status === "true"; // Convertir a booleano
+                        const nuevoEstado = !estadoActual; // Invertir el estado actual
+    
+                        console.log(`ID del registro: ${idRegistro}`);
+                        console.log(`Estado actual: ${estadoActual}`);
+                        console.log(`Nuevo estado: ${nuevoEstado}`);
+    
+                        await actualizarEstadoRegistro(idRegistro, nuevoEstado); // Llamar a la función de actualización
+                        obtenerRegistro(); // Refrescar la tabla
+                        obtenerRegistrosFalse();
+                    });
                 });
             } catch (error) {
                 console.error("Error obteniendo los registros:", error);
             }
         }
     
+        // Función para actualizar el estado del registro
+        async function actualizarEstadoRegistro(idRegistro, nuevoEstado) {
+            console.log("ID A ACTUALIZAR: ", idRegistro)
+            const url = `http://localhost:8080/api/registros/status/${idRegistro}`;
+            console.log(`Enviando solicitud a: ${url}`);
+            console.log(`Estado a enviar: ${nuevoEstado}`);
+    
+            try {
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ estatus: nuevoEstado }),
+                });
+    
+                if (response.ok) {
+                    console.log(`Registro ${idRegistro} actualizado con éxito.`);
+                    obtenerRegistro();
+                    obtenerRegistrosFalse();
+                } else {
+                    console.error(`Error al actualizar el registro ${idRegistro}.`);
+                    alert("No se pudo actualizar el estado del registro.");
+                }
+            } catch (error) {
+                console.error("Error al conectar con el servidor:", error);
+                alert("Error al conectar con el servidor.");
+            }
+        }
+    
+        async function obtenerRegistrosFalse() {
+            try {
+                const response = await fetch(apiUrl2, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${jwtToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                if (!response.ok) throw new Error("Error al obtener registros.");
+                const data = await response.json();
+                const registros = data.registroResponse.registros;
+    
+                const tablaRegistros = document.getElementById("tablaRegistrosRevisados");
+                tablaRegistros.innerHTML = "";
+    
+                registros.forEach((registro) => {
+                    const estadoTexto = registro.estatus ? "Pendiente" : "Revisada";
+                    const estadoClase = registro.estatus ? "btn-primary" : "btn-secondary";
+                    const deshabilitado = !registro.estatus ? "disabled" : ""; // Deshabilita el botón si el estado es "false"
+    
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                        <td>${registro.id_registro}</td>
+                        <td>${registro.equipo_computo.codigo}</td>
+                        <td>${registro.equipo_computo.laboratorio.nombre_lab}</td>
+                        <td>${registro.equipo_computo.laboratorio.docencia}</td>
+                        <td>${registro.alumno.nombre}</td>
+                        <td>${registro.fecha}</td>
+                        <td>${registro.horaInicial}</td>
+                        <td>${registro.horaFinal}</td>
+                        <td>${registro.comentario}</td>
+                        <td>${estadoTexto}</td>
+                        <td>
+                            <button 
+                                class="btn btn-sm revisar-btn ${estadoClase}" 
+                                data-id="${registro.id_registro}" 
+                                data-status="${registro.estatus}" 
+                                ${deshabilitado}>
+                                ${registro.estatus ? "Revisar" : "Finalizado"}
+                            </button>
+                        </td>
+                    `;
+                    tablaRegistros.appendChild(fila);
+                });
+
+            } catch (error) {
+                console.error("Error obteniendo los registros:", error);
+            }
+        }
+    
+        // Llamar a la función para cargar registros al cargar la página
         obtenerRegistro();
+        obtenerRegistrosFalse();
     </script>
     
-    
+
+
 </body>
 
 </html>
