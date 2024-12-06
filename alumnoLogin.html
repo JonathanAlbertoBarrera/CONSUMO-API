@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de Sesión - Alumnos</title>
     <!-- Bootstrap CSS -->
- 
+    <!-- Agregar la librería de CryptoJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1-crypto-js.min.js"></script>
+
 
     <style>
         body {
@@ -191,6 +193,7 @@
     <!-- JS para manejar el formulario -->
     <script>
         document.getElementById('loginFormAlumno').addEventListener('submit', async function (event) {
+            
             event.preventDefault();
             const correo = document.getElementById('emailLogin2').value;
             const contrasenia = document.getElementById('passwordLogin2').value;
@@ -202,6 +205,10 @@
                     body: new URLSearchParams({ correo, contrasenia })
                 });
                 if (response.ok) {
+                    const data = await response.json();
+                    const idAlumno = data.alumnoResponse.alumno[0].id_alumno; // Extraer el id_alumno
+                    localStorage.setItem('id_alumno', idAlumno); // Guardar el id_alumno en el local storage
+
                     alert('Inicio de sesión exitoso');
                     window.location.href = "alumno/registrarBitacora.html"; // Redirigir al panel del alumno
                 } else {
