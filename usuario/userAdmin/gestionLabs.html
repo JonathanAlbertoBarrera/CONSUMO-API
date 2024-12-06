@@ -7,78 +7,128 @@
     <title>Gestión de Laboratorios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<style>
+    body {
+        margin: 0;
+        padding: 70px 0 0; /* Espacio para la navbar fija */
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .navbar {
+        background: #007bff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+       
+    }
+
+    .navbar-brand, .nav-link {
+        color: #fff !important;
+    }
+
+    .card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        font-size: 18px;
+    }
+
+    .card-header {
+        font-weight: bold;
+        font-size: 24px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .table {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+    }
+
+    .table th, .table td {
+        text-align: center;
+        border: 1px solid #ddd !important;
+    }
+
+    .modal-header {
+        background-color: #007bff;
+    }
+
+    .modal-title {
+        color: #fff;
+    }
+
+    .container{
+        margin-top: 1%;
+    }
+
+    h3{
+        margin-top: 5%;
+    }
+</style>
+</head>
 
 <body>
-    <div class="container mt-4">
-        <h1 class="text-center">Gestión de Laboratorios</h1>
-
-        <!-- Formulario Registrar Laboratorio -->
-        <div class="col-md-5 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4>Registrar Laboratorio</h4>
-                </div>
-                <div class="card-body">
-                    <form id="registerLabForm">
-                        <div class="mb-3">
-                            <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
-                            <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11"
-                                required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="docencia" class="form-label">Docencia</label>
-                            <input type="number" class="form-control" id="docencia" placeholder="Ejemplo: 4" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Registrar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla Laboratorios -->
-        <div class="mt-4">
-            <h3 class="text-center">Lista de Laboratorios</h3>
-            <table class="table table-striped">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Docencia</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaLaboratorios"></tbody>
-            </table>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand">Gestión de Laboratorios</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="indexAdmin.html">Inicio</a>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
 
-    <!-- Modal para Editar Laboratorio -->
-    <div class="modal fade" id="modalEditarLaboratorio" tabindex="-1" aria-labelledby="modalEditarLaboratorioLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="modalEditarLaboratorioLabel">Editar Laboratorio</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formEditarLab">
-                        <input type="hidden" id="idLabEditar">
-                        <div class="mb-3">
-                            <label for="nombreLabEditar" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombreLabEditar" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="docenciaLabEditar" class="form-label">Docencia</label>
-                            <input type="number" class="form-control" id="docenciaLabEditar" required>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
-                    </form>
-                </div>
+<!-- Formulario Registrar Laboratorio -->
+<div class="container">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow">
+            <div class="card-header text-center">
+                Registrar Laboratorio
+            </div>
+            <div class="card-body">
+                <form id="registerLabForm">
+                    <div class="mb-3">
+                        <label for="nombre_lab" class="form-label">Nombre del Laboratorio</label>
+                        <input type="text" class="form-control" id="nombre_lab" placeholder="Ejemplo: CC11" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="docencia" class="form-label">Docencia</label>
+                        <input type="number" class="form-control" id="docencia" placeholder="Ejemplo: 4" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                </form>
             </div>
         </div>
     </div>
+
+    <!-- Tabla Laboratorios -->
+    <div class="mt-4">
+        <h3 class="text-center">Lista de Laboratorios</h3>
+        <div class="card shadow">
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Docencia</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaLaboratorios"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -140,11 +190,14 @@
                 <td>${lab.docencia}</td>
                 <td>${lab.estatus ? "Activo" : "Inactivo"}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" 
-                        onclick="abrirModalEditarLab(${lab.id_lab}, '${lab.nombre_lab}', ${lab.docencia})">Editar</button>
-                    <button class="btn btn-danger btn-sm" 
+                    <button class="btn" 
+                        onclick="abrirModalEditarLab(${lab.id_lab}, '${lab.nombre_lab}', ${lab.docencia})">
+                        <img src="../img/refresh.png"" alt="Enviar" style="width: 25px; height: 25px;"></button>
+                    <button class="btn" 
                         onclick="cambiarEstadoLab(${lab.id_lab}, ${lab.estatus})">
-                        ${lab.estatus ? "Desactivar" : "Activar"}
+                                <img src="${lab.estatus ? '../img/switch-off.png' : '../img/switch-on.png'}" 
+                                alt="${lab.estatus ? 'Desactivar' : 'Activar'}" 
+                                width="30" height="30">
                     </button>
                 </td>
             `;
