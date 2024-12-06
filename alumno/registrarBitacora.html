@@ -76,19 +76,19 @@
 </script>
 <script>
     document.getElementById('regisBitacora').addEventListener('submit', function (event) {
-        event.preventDefault(); // Prevenir que el formulario se envíe de forma tradicional
-        registrarBitacora(); // Llamar a la función que maneja el registro
+        event.preventDefault(); 
+        registrarBitacora(); 
     });
 
     // Función para manejar el registro
     async function registrarBitacora() {
         let id_equip = 0;
 
-        const cod = document.getElementById("codigoComputo").value; // Mover aquí para obtener el valor actualizado
+        const cod = document.getElementById("codigoComputo").value;
 
         if (!cod) {
             alert("Por favor, ingrese un código de equipo válido.");
-            return; // Si no hay código, salir de la función
+            return; 
         }
 
         try {
@@ -98,40 +98,40 @@
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Respuesta de la API:", data);  // Verifica cómo es la respuesta
+                console.log("Respuesta de la API:", data);  
 
                 // Accede correctamente al primer equipo en el array 'equipoComputos'
                 if (data.equipoComputoResponse && data.equipoComputoResponse.equipoComputos && data.equipoComputoResponse.equipoComputos[0]) {
-                    id_equip = data.equipoComputoResponse.equipoComputos[0].id_equipo; // Extraer el id del equipo
+                    id_equip = data.equipoComputoResponse.equipoComputos[0].id_equipo; 
                     console.log("ID EQUIPO: ", id_equip);
                 } else {
                     alert("No se encontró el equipo con el código ingresado.");
-                    return; // Sale de la función si no se encuentra el equipo
+                    return; 
                 }
             } else {
                 console.log("No se pudo encontrar el equipo.");
-                return; // Sale de la función si la respuesta no es ok
+                return;
             }
         } catch (error) {
             console.error('Error:', error);
             alert('No se pudo conectar al servidor.');
-            return; // Sale de la función si hay un error en la conexión
+            return;
         }
 
         if (id_equip !== 0) {
             const apiUrl = "http://localhost:8080/api/registros";
             const jwtToken = localStorage.getItem('jwtToken');
-            console.log("JWT Token:", jwtToken);  // Verifica si el token está presente
+            console.log("JWT Token:", jwtToken);  
 
-            const fecha = document.getElementById("dateRegistro").value; // Formato: 'yyyy-mm-dd'
-            const horaInicial = document.getElementById("horaStart").value + ":00"; // Asegurar el formato 'HH:mm:ss'
-            const horaFinal = document.getElementById("horaEnd").value + ":00"; // Asegurar el formato 'HH:mm:ss'
+            const fecha = document.getElementById("dateRegistro").value; 
+            const horaInicial = document.getElementById("horaStart").value + ":00"; 
+            const horaFinal = document.getElementById("horaEnd").value + ":00"; 
 
             console.log("Entrando a la api registros...");
-            // Registrar el alumno
+            // Registrar en bitacora
             const registro = {
-                id_alumno: idAlumno, // Asegúrate de que idAlumno esté disponible en el scope
-                id_equipo: id_equip, // Asignar el id de equipo correctamente
+                id_alumno: idAlumno, 
+                id_equipo: id_equip, 
                 docente: document.getElementById("nameProfesor").value,
                 fecha: fecha,
                 horaInicial: horaInicial,
@@ -141,7 +141,7 @@
             };
 
             try {
-                console.log("aqui entra")
+                console.log("Aqui muere")
                 const response = await fetch(apiUrl, {
                     method: "POST",
                     headers: {
