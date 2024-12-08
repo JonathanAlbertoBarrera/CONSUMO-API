@@ -8,47 +8,136 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<style>
+    body {
+        margin: 0;
+        padding: 70px 0 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .navbar {
+        background: #2eb3a5;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-weight: bold;
+    }
+
+    .navbar-brand,
+    .nav-link {
+        color: #fff !important;
+    }
+
+    .card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .card-header {
+        font-weight: bold;
+        font-size: 22px;
+        background-color: #28a745;
+        color: #fff;
+        text-align: center;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 4px #2eb3a5;
+        border-color: #2eb3a5;
+    }
+
+    .btn {
+        background-color: #05F2DB;
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        width: 100%;
+    }
+
+    .btn:hover {
+        background-color: #019c91;
+    }
+
+    .form-floating label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    textarea.form-control {
+        height: 100px;
+        resize: none;
+    }
+</style>
 
 <body>
-
-    <div class="col-md-5">
-        <div class="card shadow">
-            <div class="card-header text-center bg-success text-white">
-                <h4>Registrate en la bitacorá digital</h4>
-            </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand">Bitácora digital</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
-        <div class="card-body">
-            <form id="regisBitacora">
+    </nav>
 
-                <div class="mb-3 mt-1">
-                    <label for="codigoComputo" class="form-label">Codigo de computadora</label>
-                    <input type="text" class="form-control" id="codigoComputo"
-                        placeholder="Ingresa el codigo de la computadora" required>
+    <!-- Formulario -->
+    <div class="container mt-5">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4>Regístrate en la bitácora digital</h4>
                 </div>
-
-                <div class="mb-3">
-                    <label for="nameProfesor" class="form-label">Nombre del docente</label>
-                    <input type="text" class="form-control" id="nameProfesor"
-                        placeholder="Ingresa el nombre de tu docente" required>
+                <div class="card-body">
+                    <form id="regisBitacora">
+                        <div class="mb-3 mt-1">
+                            <label for="codigoComputo" class="form-label">Código de computadora</label>
+                            <input type="text" class="form-control" id="codigoComputo"
+                                placeholder="Ingresa el código de la computadora" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nameProfesor" class="form-label">Nombre del docente</label>
+                            <input type="text" class="form-control" id="nameProfesor"
+                                placeholder="Ingresa el nombre de tu docente" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dateRegistro" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="dateRegistro" name="dateRegistro" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="horaStart" class="form-label">Hora de inicio</label>
+                            <input type="time" class="form-control" id="horaStart" name="horaStart" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="horaEnd" class="form-label">Hora de final</label>
+                            <input type="time" class="form-control" id="horaEnd" name="horaEnd" required>
+                        </div>
+                        <div class="mb-3 form-floating">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="comentario"></textarea>
+                            <label for="comentario">Observaciones...</label>
+                        </div>
+                        <button type="submit" class="btn">Guardar Cambios</button>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label for="dateRegistro" class="form-label">Fecha</label>
-                    <input type="date" class="form-control" id="dateRegistro" name="dateRegistro" required>
-                </div>
-                <div class="mb-3">
-                    <label for="horaStart" class="form-label">Hora de inicio</label>
-                    <input type="time" class="form-control" id="horaStart" name="horaStart" required>
-                </div>
-                <div class="mb-3">
-                    <label for="horaEnd" class="form-label">Hora de final</label>
-                    <input type="time" class="form-control" id="horaEnd" name="horaEnd" required>
-                </div>
-                <div class="mb-3 form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="comentario"></textarea>
-                    <label for="comentario">Observaciones...</label>
-                </div>
-                <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
-            </form>
+            </div>
         </div>
     </div>
     <script>
